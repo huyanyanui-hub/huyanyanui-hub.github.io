@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Portfolio Web Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f0f0f0;
+            font-family: "Microsoft Yahei", Arial, sans-serif;
+            overflow-x: hidden;
+            padding: 0px 0px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(rgba(0, 120, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(rgba(0, 120, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+        }
+        .portfolio-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+        .portfolio-page {
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+            object-fit: contain;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 120, 255, 0.08);
+            border-radius: 8px;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            background: #f8f8f8;
+            min-height: 100px;
+        }
+
+        /* 视频模块样式（按你要求修改） */
+        .video-section {
+            width: 100%;
+            max-width: 800px; /* 限制最大宽度，避免太宽 */
+            margin: 0 auto 20px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 120, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .video-title {
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .video-player {
+            width: 100%;
+            max-height: 700px; /* 高度限制在700px */
+            height: auto;
+            border-radius: 8px;
+            outline: none;
+            object-fit: contain; /* 保持视频比例，避免拉伸 */
+        }
+
+        .indicator-wrapper {
+            position: fixed;
+            bottom: 20px;
+            right: 50px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            perspective: 1000px;
+        }
+        .page-info {
+            color: #fff;
+            font-size: 18px;
+            background: linear-gradient(135deg, rgba(0, 120, 255, 0.9), rgba(0, 80, 200, 0.9));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px 25px;
+            border-radius: 30px;
+            box-shadow: 0 0 15px rgba(0, 120, 255, 0.5), 0 2px 10px rgba(0,0,0,0.15);
+            min-width: 200px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .page-info:hover {
+            box-shadow: 0 0 25px rgba(0, 120, 255, 0.7), 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateY(-5px) rotateX(5deg);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .page-title {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+        .arc-menu {
+            padding: 20px 15px;
+            margin-bottom: 15px;
+            display: none;
+            min-width: 260px;
+            position: relative;
+            overflow: hidden;
+            background: rgba(0, 20, 50, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 120, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 120, 255, 0.3), inset 0 0 10px rgba(0, 120, 255, 0.1);
+        }
+        .arc-menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(0, 120, 255, 0.2), 
+                transparent);
+            animation: lightScan 3s linear infinite;
+        }
+        @keyframes lightScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .menu-item {
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 16px;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            background: rgba(0, 40, 80, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.2);
+        }
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #0078ff, #00e0ff);
+            border-radius: 2px;
+            transform: translateX(100%);
+            transition: transform 0.4s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
+        }
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(0, 120, 255, 0.6);
+            transform: translateY(-50%) scale(0);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 120, 255, 0.8);
+        }
+        .menu-item.active,
+        .menu-item:hover {
+            transform: translateY(-3px) rotateX(3deg) scale(1.03);
+            background: rgba(0, 80, 160, 0.5);
+            border-color: rgba(0, 120, 255, 0.6);
+            color: #00e0ff;
+            box-shadow: 0 8px 20px rgba(0, 120, 255, 0.3), 0 0 10px rgba(0, 224, 255, 0.2);
+            margin-left: 5px;
+        }
+        .menu-item.active::after,
+        .menu-item:hover::after {
+            transform: translateX(0);
+        }
+        .menu-item.active::before,
+        .menu-item:hover::before {
+            transform: translateY(-50%) scale(1);
+        }
+        .menu-item.active,
+        .menu-item:hover {
+            text-shadow: 0 0 8px rgba(0, 224, 255, 0.5);
+        }
+        .menu-list:not(:hover) .menu-item:not(.active) {
+            transform: translateY(2px) scale(0.97);
+            color: rgba(255, 255, 255, 0.6);
+            opacity: 0.7;
+            border-color: rgba(0, 120, 255, 0.1);
+        }
+        .indicator-wrapper:hover .arc-menu {
+            display: block;
+            animation: techSlideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes techSlideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) rotateX(10deg) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) rotateX(0) scale(1); 
+            }
+        }
+        .copyright {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+                background-size: 30px 30px;
+            }
+            .indicator-wrapper {
+                right: 20px;
+                perspective: 800px;
+            }
+            .page-info {
+                font-size: 14px;
+                padding: 8px 20px;
+                min-width: 160px;
+            }
+            .page-title {
+                font-size: 12px;
+            }
+            .arc-menu {
+                min-width: 220px;
+                padding: 15px 10px;
+            }
+            .menu-item {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            .menu-item.active,
+            .menu-item:hover {
+                transform: translateY(-2px) rotateX(2deg) scale(1.02);
+                margin-left: 3px;
+            }
+            .portfolio-container {
+                padding-bottom: 80px;
+            }
+            .copyright {
+                font-size: 12px;
+                padding: 15px 10px;
+            }
+            .video-section {
+                padding: 15px;
+            }
+            .video-title {
+                font-size: 16px;
+            }
+            .video-player {
+                max-height: 500px; /* 手机端适当降低高度 */
+            }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div class="portfolio-container">
+
+        <img class="portfolio-page" src="page0.jpg?v=20260325" alt="About me 第1页" id="img-0">
+        <img class="portfolio-page" data-src="page1.jpg?v=20260325" alt="About me 第2页" id="img-1">
+        <img class="portfolio-page" data-src="page2.jpg?v=20260325" alt="About me 第3页" id="img-2">
+        <img class="portfolio-page" data-src="page3.jpg?v=20260325" alt="User Experience Design 第1页" id="img-3">
+        <img class="portfolio-page" data-src="page4.jpg?v=20260325" alt="User Experience Design 第2页" id="img-4">
+        <img class="portfolio-page" data-src="page5.jpg?v=20260325" alt="User Experience Design 第3页" id="img-5">
+        <img class="portfolio-page" data-src="page6.jpg?v=20260325" alt="User Experience Design 第4页" id="img-6">
+        <img class="portfolio-page" data-src="page7.jpg?v=20260325" alt="User Experience Design 第5页" id="img-7">
+        <img class="portfolio-page" data-src="page8.jpg?v=20260325" alt="User Experience Design 第6页" id="img-8">
+        <img class="portfolio-page" data-src="page9.jpg?v=20260325" alt="User Experience Design 第7页" id="img-9">
+        <img class="portfolio-page" data-src="page10.jpg?v=20260325" alt="Campaign Design AI Workflow 第1页" id="img-10">
+        <img class="portfolio-page" data-src="page11.jpg?v=20260325" alt="Campaign Design AI Workflow 第2页" id="img-11">
+        <img class="portfolio-page" data-src="page12.jpg?v=20260325" alt="Campaign Design AI Workflow 第3页" id="img-12">
+        <img class="portfolio-page" data-src="page13.jpg?v=20260325" alt="Campaign Design AI Workflow 第4页" id="img-13">
+        <img class="portfolio-page" data-src="page14.jpg?v=20260325" alt="Campaign Design AI Workflow 第5页" id="img-14">
+        <img class="portfolio-page" data-src="page15.jpg?v=20260325" alt="Campaign Design AI Workflow 第6页" id="img-15">
+        <img class="portfolio-page" data-src="page16.jpg?v=20260325" alt="Campaign Design AI Workflow 第7页" id="img-16">
+        <img class="portfolio-page" data-src="page17.jpg?v=20260325" alt="Campaign Design AI Workflow 第8页" id="img-17">
+        <img class="portfolio-page" data-src="page18.jpg?v=20260325" alt="Animation Design AI Workflow 第1页" id="img-18">
+        <img class="portfolio-page" data-src="page19.jpg?v=20260325" alt="Animation Design AI Workflow 第2页" id="img-19">
+        <img class="portfolio-page" data-src="page20.jpg?v=20260325" alt="Animation Design AI Workflow 第3页" id="img-20">
+
+        <!-- ====================== 修改后的视频模块 ====================== -->
+        <div class="video-section">
+            <div class="video-title">The Dog Battles the Stone Monster</div>
+            <video class="video-player" controls preload="metadata">
+                <source src="000.MP4?v=20260325" type="video/mp4">
+                您的浏览器不支持视频播放
+            </video>
+        </div>
+        <!-- ============================================================= -->
+
+        <img class="portfolio-page" data-src="page21.jpg?v=20260325" alt="Animation Design AI Workflow 第4页" id="img-21">
+        <img class="portfolio-page" data-src="page22.jpg?v=20260325" alt="Animation Design AI Workflow 第5页" id="img-22">
+        <img class="portfolio-page" data-src="page23.jpg?v=20260325" alt="Animation Design AI Workflow 第6页" id="img-23">
+        <img class="portfolio-page" data-src="page24.jpg?v=20260325" alt="Animation Design AI Workflow 第7页" id="img-24">
+        <img class="portfolio-page" data-src="page25.jpg?v=20260325" alt="Innovation AI APP Design 第1页" id="img-25">
+        <img class="portfolio-page" data-src="page26.jpg?v=20260325" alt="Innovation AI APP Design 第2页" id="img-26">
+        <img class="portfolio-page" data-src="page27.jpg?v=20260325" alt="Innovation AI APP Design 第3页" id="img-27">
+        <img class="portfolio-page" data-src="page28.jpg?v=20260325" alt="Innovation AI APP Design 第4页" id="img-28">
+        <img class="portfolio-page" data-src="page29.jpg?v=20260325" alt="Innovation AI APP Design 第5页" id="img-29">
+        <img class="portfolio-page" data-src="page30.jpg?v=20260325" alt="contact me" id="img-30">
+
+        <div class="copyright">
+            Copyright © 2026 Mica_Yanyan Hu <br>
+            This portfolio is for personal display and reference only. Commercial use, plagiarism or alteration without authorization is prohibited.
+        </div>
+    </div>
+
+    <div class="indicator-wrapper">
+        <div class="arc-menu">
+            <ul class="menu-list">
+                <li class="menu-item active" data-target="0">About me</li>
+                <li class="menu-item" data-target="5">User Experience Design</li>
+                <li class="menu-item" data-target="10">Campaign Design AI Workflow</li>
+                <li class="menu-item" data-target="18">Animation Design AI Workflow</li>
+                <li class="menu-item" data-target="25">Innovation AI APP Design</li>
+                <li class="menu-item" data-target="30">contact me</li>
+            </ul>
+        </div>
+        <div class="page-info">
+            <div class="page-num">1 / 31</div>
+            <div class="page-title">About me</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('dragstart', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+
+        const pages = document.querySelectorAll('.portfolio-page');
+        const pageNumEl = document.querySelector('.page-num');
+        const pageTitleEl = document.querySelector('.page-title');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const totalPages = pages.length;
+        let currentPage = 0;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const initPage = parseInt(urlParams.get('page')) || 0;
+        currentPage = Math.max(0, Math.min(initPage, totalPages - 1));
+
+        const pageTitles = [
+            "About me", "About me", "About me",
+            "User Experience Design", "User Experience Design", "User Experience Design",
+            "User Experience Design", "User Experience Design", "User Experience Design",
+            "User Experience Design", "Campaign Design AI Workflow", "Campaign Design AI Workflow",
+            "Campaign Design AI Workflow", "Campaign Design AI Workflow", "Campaign Design AI Workflow",
+            "Campaign Design AI Workflow", "Campaign Design AI Workflow", "Campaign Design AI Workflow",
+            "Animation Design AI Workflow", "Animation Design AI Workflow", "Animation Design AI Workflow",
+            "Animation Design AI Workflow", "Animation Design AI Workflow", "Animation Design AI Workflow",
+            "Animation Design AI Workflow", "Innovation AI APP Design", "Innovation AI APP Design",
+            "Innovation AI APP Design", "Innovation AI APP Design", "Innovation AI APP Design", "contact me"
+        ];
+
+        function loadImagesSequentially(startIndex = 1) {
+            if (startIndex >= totalPages) return;
+            const img = pages[startIndex];
+            const src = img.getAttribute('data-src');
+            if (!src) { loadImagesSequentially(startIndex + 1); return; }
+            const tempImg = new Image();
+            tempImg.src = src;
+            tempImg.onload = function() {
+                img.src = src;
+                img.removeAttribute('data-src');
+                setTimeout(() => loadImagesSequentially(startIndex + 1), 50);
+            };
+            tempImg.onerror = function() {
+                console.warn(`图片加载失败: ${src}`);
+                loadImagesSequentially(startIndex + 1);
+            };
+        }
+
+        function updateUrlParams() {
+            window.history.replaceState({}, '', `index.html?page=${currentPage}`);
+        }
+
+        function updatePageInfo() {
+            pageNumEl.textContent = `${currentPage + 1} / ${totalPages}`;
+            pageTitleEl.textContent = pageTitles[currentPage];
+            
+            let activeMenuIndex = 0;
+            if (currentPage >= 5 && currentPage < 10) activeMenuIndex = 1;
+            else if (currentPage >= 10 && currentPage < 18) activeMenuIndex = 2;
+            else if (currentPage >= 18 && currentPage < 25) activeMenuIndex = 3;
+            else if (currentPage >= 25 && currentPage < 30) activeMenuIndex = 4;
+            else if (currentPage >= 30) activeMenuIndex = 5;
+
+            menuItems.forEach((item, index) => {
+                item.classList.toggle('active', index === activeMenuIndex);
+            });
+            updateUrlParams();
+        }
+
+        function anchorToImage(index) {
+            if (index < 0) index = 0;
+            if (index >= totalPages) index = totalPages - 1;
+            pages[index].scrollIntoView({ behavior: 'auto', block: 'start' });
+            currentPage = index;
+            updatePageInfo();
+        }
+
+        function scrollToPage(index) {
+            if (index < 0) index = 0;
+            if (index >= totalPages) index = totalPages - 1;
+            pages[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            currentPage = index;
+            updatePageInfo();
+        }
+
+        window.addEventListener('load', () => {
+            anchorToImage(currentPage);
+            loadImagesSequentially(1);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') scrollToPage(currentPage - 1);
+            if (e.key === 'ArrowDown') scrollToPage(currentPage + 1);
+        });
+
+        window.addEventListener('scroll', () => {
+            const viewportTop = window.scrollY;
+            const viewportHeight = window.innerHeight;
+            for (let i = 0; i < pages.length; i++) {
+                const pageTop = pages[i].offsetTop;
+                const pageHeight = pages[i].offsetHeight;
+                if (pageTop <= viewportTop + viewportHeight / 3 && pageTop + pageHeight > viewportTop) {
+                    currentPage = i;
+                    updatePageInfo();
+                    break;
+                }
+            }
+        });
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetIndex = parseInt(item.getAttribute('data-target'));
+                item.animate([
+                    { transform: 'scale(1.03) rotateX(3deg)', boxShadow: '0 8px 20px rgba(0, 120, 255, 0.4), 0 0 15px rgba(0, 224, 255, 0.3)' },
+                    { transform: 'scale(1.1) rotateX(5deg)', boxShadow: '0 10px 25px rgba(0, 120, 255, 0.6), 0 0 20px rgba(0, 224, 255, 0.5)' },
+                    { transform: 'scale(1.03) rotateX(3deg)', boxShadow: '0 8px 20px rgba(0, 120, 255, 0.4), 0 0 15px rgba(0, 224, 255, 0.3)' }
+                ], { duration: 400, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' });
+                scrollToPage(targetIndex);
+            });
+        });
+
+        updatePageInfo();
+    </script>
+</body>
+</html>
